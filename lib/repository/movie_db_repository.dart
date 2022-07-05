@@ -6,6 +6,9 @@ const String nowPlaying = "now_playing";
 const String popular = "popular";
 const String topRated = "top_rated";
 
+const String creditsDMovie = "/credits";
+const String similarDMovie = "/similar";
+
 //ImagesUrl
 const String baseImageUrl = "https://image.tmdb.org/t/p/";
 const String originalImage = baseImageUrl+"original";

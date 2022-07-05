@@ -10,10 +10,32 @@ class DeveloperScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
+              Padding(
+                padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(
+                        Icons.arrow_back,
+                      ),
+                    ),
+                    Text(
+                      "Tentang Developer",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  ],
+                ),
+              ),
               Container(
-                padding: EdgeInsets.fromLTRB(10, 20, 10, 10),
+                padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
                 width: double.infinity,
-                height: 340,
+                height: 330,
                 child: Stack(
                   children: [
                     ClipRRect(
@@ -46,7 +68,10 @@ class DeveloperScreen extends StatelessWidget {
                   fontSize: 24,
                 ),
               ),
-              Text("Jakarta, 4 Agustus 1999"),
+              Padding(
+                padding: EdgeInsets.fromLTRB(0, 0, 0, 16),
+                child: Text("Jakarta, 4 Agustus 1999"),
+              ),
               statusBox(
                   title: "Data Diri",
                   widget: Table(
@@ -85,7 +110,7 @@ class DeveloperScreen extends StatelessWidget {
                       ]),
                     ],
                   )),
-              statusBox(title: "Data Diri", body: "Saya seorang Manusia Biasa yang sedang belajar flutter")
+              statusBox(title: "Pengenalan Singkat", body: "Seorang pekerja yang memiliki hobi ngegame, nonton anime dan membaca komik.")
             ],
           ),
         ),
@@ -95,7 +120,7 @@ class DeveloperScreen extends StatelessWidget {
 
   Widget statusBox({Widget? widget, String? body, required String title}) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Column(
