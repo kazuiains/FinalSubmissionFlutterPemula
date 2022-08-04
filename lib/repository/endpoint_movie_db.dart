@@ -8,6 +8,8 @@ const String topRated = "top_rated";
 
 const String creditsDMovie = "/credits";
 const String similarDMovie = "/similar";
+const String reviewsDMovie = "/reviews";
+const String imagesDMovie = "/images";
 
 //ImagesUrl
 const String baseImageUrl = "https://image.tmdb.org/t/p/";

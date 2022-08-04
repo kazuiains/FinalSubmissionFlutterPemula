@@ -1,5 +1,7 @@
-import 'package:submission_flutter_pemula/model/cast.dart';
-import 'package:submission_flutter_pemula/model/crew.dart';
+
+
+import 'package:submission_flutter_pemula/model/credits/cast.dart';
+import 'package:submission_flutter_pemula/model/credits/crew.dart';
 
 class MovieCredits {
   MovieCredits({

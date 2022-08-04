@@ -1,14 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:submission_flutter_pemula/config/dio_config.dart';
-import 'package:submission_flutter_pemula/model/list_movie.dart';
-import 'package:submission_flutter_pemula/repository/movie_db_repository.dart';
+import 'package:submission_flutter_pemula/model/list/list_movie.dart';
+import 'package:submission_flutter_pemula/model/list/list_results.dart';
+import 'package:submission_flutter_pemula/repository/endpoint_movie_db.dart';
 import 'package:submission_flutter_pemula/repository/parameter_key_request.dart';
 import 'package:submission_flutter_pemula/screen/detail_screen.dart';
 import 'package:submission_flutter_pemula/screen/developer_screen.dart';
 import 'package:submission_flutter_pemula/widget/image_online.dart';
-
-import '../model/results.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);

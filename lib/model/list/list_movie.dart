@@ -1,5 +1,5 @@
-import 'dates.dart';
-import 'results.dart';
+import 'package:submission_flutter_pemula/model/list/dates.dart';
+import 'package:submission_flutter_pemula/model/list/list_results.dart';
 
 class ListMovie {
   ListMovie({

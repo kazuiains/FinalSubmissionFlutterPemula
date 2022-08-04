@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:submission_flutter_pemula/config/dio_config.dart';
-import 'package:submission_flutter_pemula/model/detail_movie.dart';
-import 'package:submission_flutter_pemula/model/list_movie.dart';
-import 'package:submission_flutter_pemula/model/movie_credits.dart';
-import 'package:submission_flutter_pemula/model/results.dart';
-import 'package:submission_flutter_pemula/repository/movie_db_repository.dart';
+import 'package:submission_flutter_pemula/model/detail/detail_movie.dart';
+import 'package:submission_flutter_pemula/model/list/list_movie.dart';
+import 'package:submission_flutter_pemula/model/list/list_results.dart';
+import 'package:submission_flutter_pemula/model/credits/movie_credits.dart';
+import 'package:submission_flutter_pemula/repository/endpoint_movie_db.dart';
 import 'package:submission_flutter_pemula/repository/parameter_key_request.dart';
 import 'package:submission_flutter_pemula/widget/image_online.dart';
 
@@ -33,6 +33,8 @@ class _DetailScreenState extends State<DetailScreen> {
     Response? detail;
     Response? credits;
     Response? similar;
+    Response? images;
+    Response? reviews;
 
     try {
       detail = await movieDbDio.get("${widget.results?.id}", queryParameters: {pApiKey: apiKey, pLanguage: defaultLanguage, pPage: defaultPage});
@@ -40,6 +42,10 @@ class _DetailScreenState extends State<DetailScreen> {
           .get("${widget.results?.id}$creditsDMovie", queryParameters: {pApiKey: apiKey, pLanguage: defaultLanguage, pPage: defaultPage});
       similar = await movieDbDio
           .get("${widget.results?.id}$similarDMovie", queryParameters: {pApiKey: apiKey, pLanguage: defaultLanguage, pPage: defaultPage});
+      images = await movieDbDio
+          .get("${widget.results?.id}$images", queryParameters: {pApiKey: apiKey, pLanguage: defaultLanguage});
+      reviews = await movieDbDio
+          .get("${widget.results?.id}$reviews", queryParameters: {pApiKey: apiKey, pLanguage: defaultLanguage, pPage: defaultPage});
     } catch (error) {
       _isLoading = false;
       print('there is an error: $error');

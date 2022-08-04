@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:submission_flutter_pemula/repository/movie_db_repository.dart';
+import 'package:submission_flutter_pemula/repository/endpoint_movie_db.dart';
 
 BaseOptions movieDbOptionDio = BaseOptions(
   baseUrl: baseUrl,

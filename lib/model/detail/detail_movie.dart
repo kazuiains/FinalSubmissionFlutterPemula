@@ -1,7 +1,7 @@
-import 'package:submission_flutter_pemula/model/genres.dart';
-import 'package:submission_flutter_pemula/model/production_companies.dart';
-import 'package:submission_flutter_pemula/model/production_countries.dart';
-import 'package:submission_flutter_pemula/model/spoken_languages.dart';
+import 'package:submission_flutter_pemula/model/detail/genres.dart';
+import 'package:submission_flutter_pemula/model/detail/production_companies.dart';
+import 'package:submission_flutter_pemula/model/detail/production_countries.dart';
+import 'package:submission_flutter_pemula/model/detail/spoken_languages.dart';
 
 class DetailMovie {
   DetailMovie({
