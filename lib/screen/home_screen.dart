@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:submission_flutter_pemula/config/dio_config.dart';
 import 'package:submission_flutter_pemula/model/list/list_movie.dart';
 import 'package:submission_flutter_pemula/model/list/list_results.dart';
+import 'package:submission_flutter_pemula/network/general_state.dart';
 import 'package:submission_flutter_pemula/repository/endpoint_movie_db.dart';
 import 'package:submission_flutter_pemula/repository/parameter_key_request.dart';
 import 'package:submission_flutter_pemula/screen/detail_screen.dart';
 import 'package:submission_flutter_pemula/screen/developer_screen.dart';
+import 'package:submission_flutter_pemula/viewmodel/home_viewmodel.dart';
 import 'package:submission_flutter_pemula/widget/image_online.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -17,42 +19,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool _isLoading = true;
-  ListMovie? _popularList;
-  ListMovie? _topRatedList;
-  ListMovie? _nowPlayingList;
-  ListMovie? _upcomingList;
-
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
-
-  void init() async {
-    Response? popularResp;
-    Response? topRatedResp;
-    Response? nowPlayingResp;
-    Response? upcomingResp;
-    try {
-      popularResp = await movieDbDio.get(popular, queryParameters: {pApiKey: apiKey, pLanguage: defaultLanguage, pPage: defaultPage});
-      topRatedResp = await movieDbDio.get(topRated, queryParameters: {pApiKey: apiKey, pLanguage: defaultLanguage, pPage: defaultPage});
-      nowPlayingResp = await movieDbDio.get(nowPlaying, queryParameters: {pApiKey: apiKey, pLanguage: defaultLanguage, pPage: defaultPage});
-      upcomingResp = await movieDbDio.get(upcoming, queryParameters: {pApiKey: apiKey, pLanguage: defaultLanguage, pPage: defaultPage});
-    } catch (error) {
-      _isLoading = false;
-      print('there is an error: $error');
-    } finally {
-      setState(() {
-        _isLoading = false;
-
-        _popularList = ListMovie.fromJson(popularResp?.data!);
-        _topRatedList = ListMovie.fromJson(topRatedResp?.data!);
-        _nowPlayingList = ListMovie.fromJson(nowPlayingResp?.data!);
-        _upcomingList = ListMovie.fromJson(upcomingResp?.data!);
-      });
-    }
-  }
+  final _viewModel = HomeViewModel();
 
   @override
   Widget build(BuildContext context) {
@@ -60,38 +27,87 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: AppBar(
           title: const Text("My Movie List"),
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (_isLoading) ...[
-                SizedBox(
-                  height: MediaQuery.of(context).size.height,
-                  child: const Center(
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.lightBlueAccent),
-                    ),
-                  ),
-                )
-              ] else ...[
-                InkWell(
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(
-                      builder: (context) {
-                        return DeveloperScreen();
-                      },
-                    ));
+        body: RefreshIndicator(
+          onRefresh: _refresh,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                FutureBuilder<GeneralState<HomeData>>(
+                  future: _viewModel.init(),
+                  builder: (context, snapshot) {
+                    print("connection state: ${snapshot.connectionState}");
+                    print("has error: ${snapshot.hasError}");
+                    print("has data: ${snapshot.hasData}");
+                    if (snapshot.connectionState != ConnectionState.done) {
+                      return SizedBox(
+                        height: MediaQuery.of(context).size.height,
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.lightBlueAccent),
+                          ),
+                        ),
+                      );
+                    } else if (snapshot.hasData) {
+                      if (snapshot.data!.error != null) {
+                        return Text("error");
+                      } else {
+                        return Column(
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(
+                                  builder: (context) {
+                                    return DeveloperScreen();
+                                  },
+                                ));
+                              },
+                              child: Image.asset("images/background_3.jpg"),
+                            ),
+                            MovieDbGridView(
+                                listTitle: "Popular",
+                                listData: snapshot
+                                    .data!.success!.popularData!.onSuccess),
+                            MovieDbGridView(
+                                listTitle: "Top Rated",
+                                listData: snapshot
+                                    .data!.success!.topRelatedData!.onSuccess),
+                            MovieDbGridView(
+                                listTitle: "Now Playing",
+                                listData: snapshot
+                                    .data!.success!.nowPlayingData!.onSuccess),
+                            MovieDbGridView(
+                                listTitle: "Upcoming",
+                                listData: snapshot
+                                    .data!.success!.upcomingData!.onSuccess),
+                          ],
+                        );
+                      }
+                    } else if(snapshot.hasError){
+                      return Text("error");
+                    } else {
+                      //no data
+                      return SizedBox(
+                        height: MediaQuery.of(context).size.height,
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.lightBlueAccent),
+                          ),
+                        ),
+                      );
+                    }
                   },
-                  child: Image.asset("images/background_3.jpg"),
                 ),
-                MovieDbGridView(listTitle: "Popular", listData: _popularList),
-                MovieDbGridView(listTitle: "Top Rated", listData: _topRatedList),
-                MovieDbGridView(listTitle: "Now Playing", listData: _nowPlayingList),
-                MovieDbGridView(listTitle: "Upcoming", listData: _upcomingList),
               ],
-            ],
+            ),
           ),
         ));
+  }
+
+  Future<void> _refresh() async{
+    setState(() {});
   }
 }
 
@@ -99,7 +115,8 @@ class MovieDbGridView extends StatefulWidget {
   final String listTitle;
   final ListMovie? listData;
 
-  const MovieDbGridView({Key? key, required this.listTitle, this.listData}) : super(key: key);
+  const MovieDbGridView({Key? key, required this.listTitle, this.listData})
+      : super(key: key);
 
   @override
   State<MovieDbGridView> createState() => _MovieDbGridViewState();
@@ -121,7 +138,8 @@ class _MovieDbGridViewState extends State<MovieDbGridView> {
               child: Text(
                 widget.listTitle,
                 textAlign: TextAlign.start,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
           ),
@@ -166,12 +184,14 @@ class _MovieDbGridViewState extends State<MovieDbGridView> {
                                   top: 0,
                                   child: Card(
                                     elevation: 0.0,
-                                    color: const Color.fromRGBO(68, 138, 255, 50),
+                                    color:
+                                        const Color.fromRGBO(68, 138, 255, 50),
                                     child: Padding(
                                       padding: const EdgeInsets.all(2.0),
                                       child: Text(
                                         "${data?.voteAverage!}",
-                                        style: const TextStyle(color: Colors.white),
+                                        style: const TextStyle(
+                                            color: Colors.white),
                                       ),
                                     ),
                                   ),
@@ -183,7 +203,8 @@ class _MovieDbGridViewState extends State<MovieDbGridView> {
                             flex: 1,
                             child: Center(
                               child: Padding(
-                                padding: const EdgeInsets.fromLTRB(4.0, 0, 4.0, 0),
+                                padding:
+                                    const EdgeInsets.fromLTRB(4.0, 0, 4.0, 0),
                                 child: Text(
                                   "${data?.title!}",
                                   overflow: TextOverflow.ellipsis,
